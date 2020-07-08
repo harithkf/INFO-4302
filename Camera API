@@ -1,0 +1,88 @@
+import React, { useState, useEffect, useRef } from 'react';
+import * as ImagePicker from 'expo-image-picker';
+import { Text, View, Button, SafeAreaView,Alert, TouchableOpacity } from 'react-native';
+import { Camera } from 'expo-camera';
+
+
+
+export default function App() {
+ 
+
+  const [hasPermission, setHasPermission] = useState(null);
+  const [cameraRef, setCameraRef] = useState(null)
+  const [type, setType] = useState(Camera.Constants.Type.back);
+
+  useEffect(() => {
+    (async () => {
+      const { status } = await Camera.requestPermissionsAsync();
+      setHasPermission(status === 'granted');
+    })();
+  }, []);
+
+
+  if (hasPermission === null) {
+    return <View />;
+  }
+  if (hasPermission === false) {
+    return <Text>No access to camera</Text>;
+  }
+  return (
+    
+    <View style={{ flex: 1 }}>
+      <Camera style={{ flex: 1 }} type={type} ref={ref => {
+        setCameraRef(ref) ;
+  }}>
+        <View
+          style={{
+            flex: 1,
+            backgroundColor: 'transparent',
+            flexDirection: 'row',
+          }}>
+
+          
+        <TouchableOpacity style={{alignSelf: 'center'}} onPress={async() => {
+            if(cameraRef){
+              let photo = await cameraRef.takePictureAsync();
+              console.log('photo', photo);
+
+            }
+          }}>
+          <Text style={{ fontSize: 18, marginBottom: 30, color: 'white' }}> Camera </Text>
+      
+          </TouchableOpacity>
+
+
+
+         <TouchableOpacity style={{alignSelf: 'center'}} onPress=  {
+        
+async () => {
+    try {
+      let result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.All,
+        allowsEditing: true,
+        aspect: [4, 3],
+        quality: 1,
+      });
+      if (!result.cancelled) {
+        this.setState({ image: result.uri });
+      }
+
+      console.log(result);
+    } catch (E) {
+      console.log(E);
+    }
+  }
+
+          
+          
+          }>
+          <Text style={{ fontSize: 18, marginBottom: 30, color: 'white' }}> Gallery </Text>
+      
+          </TouchableOpacity>
+       
+
+        </View>
+      </Camera>
+    </View>
+  );
+}
